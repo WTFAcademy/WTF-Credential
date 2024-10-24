@@ -16,8 +16,8 @@ func main() {
 	daos.InitPostgres()
 	go tasks.GetContributorsJob()
 	r := gin.Default()
+	r.Use(middleware.CORSMiddleware())
 	route(r)
-	r.Use(middleware.Core())
 	err := r.Run(":" + configs.Config().Port)
 	if err != nil {
 		return
@@ -27,11 +27,13 @@ func main() {
 func route(r *gin.Engine) {
 	public := r.Group("/api/v1")
 	{
-		public.GET("/ping", handle.GetPing)                      // 不鉴权的测试接口 ✅
+		public.GET("/ping", handle.GetPing)                      //不鉴权的测试接口 ✅
 		public.POST("/auth/nonce", handle.GenerateNonce)         //获取nonce ✅❌
 		public.POST("/auth/github_login", handle.GithubLogin)    //github登陆✅❌
 		public.POST("/auth/login", handle.Login)                 //钱包登陆✅❌
-		public.POST("/contributors", handle.GetContributorsList) //全部贡献者列表✅❌github列表没拿到信息
+		public.POST("/contributors", handle.GetContributorsList) //全部贡献者列表✅❌
+		public.GET("/courses", handle.GetAllCourse)              //获取课程列表❌❌
+		public.GET("/courses/:course_id", handle.GetCourseInfo)  //根据课程id获取课程信息❌❌
 	}
 
 	private := r.Group("/api/v1")

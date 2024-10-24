@@ -5,6 +5,8 @@ go 1.21.3
 require (
 	github.com/beego/beego/v2 v2.3.1
 	github.com/bsm/redislock v0.9.4
+	github.com/ethereum/go-ethereum v1.12.1
+	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-jwt/jwt/v4 v4.3.0
 	github.com/google/go-github/v63 v63.0.0
@@ -27,7 +29,6 @@ require (
 	github.com/dchest/uniuri v1.2.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
-	github.com/ethereum/go-ethereum v1.12.1 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect

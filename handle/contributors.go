@@ -8,7 +8,7 @@ import (
 	"wtf-credential/service"
 )
 
-// GetContributorsList 按不同的键返回所有 Redis 中的贡献者信息
+// ContributorsList 按不同的键返回所有 Redis 中的贡献者信息
 func GetContributorsList(ctx *gin.Context) {
 	var getContributorsListRequest request.GetContributorsList
 	if err := ctx.ShouldBindJSON(&getContributorsListRequest); err != nil {

@@ -2,6 +2,7 @@ package daos
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/spruceid/siwe-go"
@@ -11,9 +12,11 @@ import (
 )
 
 func GenerateNonce(ctx context.Context, wallet string) (res string, err error) {
-	var nonce = model.TbNonce{}
-	if err = DB.WithContext(ctx).Where("address = ?", wallet).First(&nonce).Error; err != nil {
-		return ``, err
+	var nonce model.TbNonce
+	if err := DB.WithContext(ctx).Where("address = ?", wallet).First(&nonce).Error; err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return ``, err
+		}
 	}
 
 	if &nonce != nil {

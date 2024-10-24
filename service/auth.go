@@ -83,10 +83,10 @@ func GithubLogin(ctx context.Context, code string) (*response.GithubLoginRespons
 
 	// 如果未找到用户，则创建新用户
 	if userWalletInfo == nil {
-		//err = daos.CreateUser(ctx, GithubUser.Name) // 创建新用户
-		//if err != nil {
-		//	return nil, err // 处理创建用户时的错误
-		//}
+		err = daos.CreateUser(ctx, GithubUser.Name, GithubUser.Name, GithubUser.Email, GithubUser.AvatarURL) // 创建新用户
+		if err != nil {
+			return nil, err // 处理创建用户时的错误
+		}
 		// 重新获取用户信息以获取用户 ID
 		userWalletInfo, err = daos.GetUserByGithubName(ctx, GithubUser.Name)
 		if err != nil {
@@ -107,7 +107,7 @@ func testGithubLogin(ctx context.Context, code string) (*response.GithubLoginRes
 
 	userWalletInfo, err := daos.GetUserByGithubName(ctx, &code)
 	if err != nil {
-		return nil, err // 处理查询用户时的错误
+		return nil, err
 	}
 
 	// 创建 JWT
@@ -127,7 +127,7 @@ func Login(ctx context.Context, req request.LoginRequest) (*response.LoginRespon
 
 	token, err := middleware.CreateToken(ctx, userWalletInfo.Id)
 	if err != nil {
-		return nil, err // 处理创建用户时的错误
+		return nil, err
 	}
 	return &response.LoginResponse{Token: token}, nil
 }
