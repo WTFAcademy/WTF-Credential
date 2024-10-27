@@ -97,7 +97,13 @@ func GithubLogin(ctx context.Context, code string) (*response.GithubLoginRespons
 		return nil, fmt.Errorf("创建 JWT 失败 (用户 ID: %d): %w", userWalletInfo.Id, err)
 	}
 
-	return &response.GithubLoginResponse{Token: token}, nil
+	return &response.GithubLoginResponse{
+		Token:    token,
+		Github:   userWalletInfo.Github,
+		Email:    userWalletInfo.Email,
+		Username: userWalletInfo.UserName,
+		Avatar:   userWalletInfo.Avatar,
+	}, nil
 }
 func testGithubLogin(ctx context.Context, code string) (*response.GithubLoginResponse, error) {
 

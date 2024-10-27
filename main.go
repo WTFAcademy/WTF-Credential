@@ -42,5 +42,6 @@ func route(r *gin.Engine) {
 		private.GET("/user/wallet/", handle.GetUserWallet)       //获取钱包✅❌
 		private.POST("/user/wallet/bind", handle.BindWallet)     //绑定钱包✅❌
 		private.POST("/user/wallet/change", handle.ChangeWallet) //改变钱包✅❌
+		private.GET("/user/profile", handle.GetProfileByUserID)  // 获取用户信息✅
 	}
 }

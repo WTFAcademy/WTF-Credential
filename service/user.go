@@ -92,3 +92,27 @@ func bindNewWallet(ctx context.Context, userId uuid.UUID, newWallet string) erro
 	}
 	return daos.BindWallet(ctx, wallet)
 }
+
+func GetProfileByUserID(ctx context.Context, loginUid string) (*response.GetProfileByUserID, error) {
+	userProfile, err := daos.GetUserProfileByID(ctx, loginUid)
+	if err != nil {
+		return nil, err
+	}
+	wallet, err := daos.GetWalletByUserId(ctx, loginUid)
+	if err != nil {
+		return nil, err
+	}
+	profile := &response.GetProfileByUserID{
+		Github:   userProfile.Github,   // 用户的 GitHub 用户名
+		Email:    userProfile.Email,    // 用户的电子邮件地址
+		Username: userProfile.Username, // 用户名
+		Nickname: userProfile.Nickname, // 用户昵称
+		Twitter:  userProfile.Twitter,  // 用户的 Twitter 账号
+		Bio:      userProfile.Bio,      // 用户简介或描述
+		Viewer:   userProfile.Viewer,   // 查看者与用户的关系状态
+		Avatar:   userProfile.Avatar,   // 用户头像图片的 URL
+		Wallet:   wallet.Wallet,        // 与用户账户关联的钱包地址
+	}
+
+	return profile, nil
+}

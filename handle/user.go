@@ -87,3 +87,18 @@ func ChangeWallet(ctx *gin.Context) {
 	}
 	response.JsonSuccess(ctx, data)
 }
+
+// GetProfileByUserID
+func GetProfileByUserID(ctx *gin.Context) {
+	loginUid, ok := middleware.GetUuidFromContext(ctx)
+	if !ok {
+		ctx.JSON(200, errors.Entity("failed to retrieve user from context"))
+		return
+	}
+	data, err := service.GetProfileByUserID(ctx, loginUid)
+	if err != nil {
+		ctx.JSON(200, errors.Unknown(err))
+		return
+	}
+	response.JsonSuccess(ctx, data)
+}
