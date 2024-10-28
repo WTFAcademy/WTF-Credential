@@ -72,18 +72,17 @@ func GithubLogin(ctx context.Context, code string) (*response.GithubLoginRespons
 	} else {
 		GithubUser, err = getGithubUserInfo(ctx, code)
 		if err != nil {
-			return nil, fmt.Errorf("获取 GitHub 用户信息失败: %w", err)
+			return nil, fmt.Errorf("获取 GitHub 用户信息失败 (code: %s): %w", code, err)
 		}
 	}
 
-	userWalletInfo, _ := daos.GetUserByGithubName(ctx, GithubUser.Name)
-
-	// 如果未找到用户，则创建新用户
-	if userWalletInfo == nil {
+	userWalletInfo, err := daos.GetUserByGithubName(ctx, GithubUser.Name)
+	if err != nil && userWalletInfo == nil {
 		err = daos.CreateUser(ctx, GithubUser.Name, GithubUser.Name, GithubUser.Email, GithubUser.AvatarURL)
 		if err != nil {
 			return nil, fmt.Errorf("创建新用户失败 (Github 用户名: %s): %w", GithubUser.Name, err)
 		}
+
 		// 重新获取用户信息以获取用户 ID
 		userWalletInfo, err = daos.GetUserByGithubName(ctx, GithubUser.Name)
 		if err != nil {
@@ -99,7 +98,7 @@ func GithubLogin(ctx context.Context, code string) (*response.GithubLoginRespons
 
 	return &response.GithubLoginResponse{
 		Token:    token,
-		Github:   userWalletInfo.Github,
+		Github:   *GithubUser.Name,
 		Email:    userWalletInfo.Email,
 		Username: userWalletInfo.UserName,
 		Avatar:   userWalletInfo.Avatar,

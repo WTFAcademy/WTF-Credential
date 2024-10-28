@@ -16,6 +16,7 @@ func main() {
 	daos.InitPostgres()
 	go tasks.GetContributorsJob()
 	r := gin.Default()
+	gin.SetMode(gin.DebugMode)
 	r.Use(middleware.CORSMiddleware())
 	route(r)
 	err := r.Run(":" + configs.Config().Port)
@@ -39,9 +40,10 @@ func route(r *gin.Engine) {
 	private := r.Group("/api/v1")
 	private.Use(middleware.JWTAuthMiddleware())
 	{
-		private.GET("/user/wallet/", handle.GetUserWallet)       //获取钱包✅❌
-		private.POST("/user/wallet/bind", handle.BindWallet)     //绑定钱包✅❌
-		private.POST("/user/wallet/change", handle.ChangeWallet) //改变钱包✅❌
-		private.GET("/user/profile", handle.GetProfileByUserID)  // 获取用户信息✅
+		private.GET("/user/wallet/", handle.GetUserWallet)             //获取钱包✅❌
+		private.POST("/user/wallet/bind", handle.BindWallet)           //绑定钱包✅❌
+		private.POST("/user/wallet/change", handle.ChangeWallet)       //改变钱包✅❌
+		private.POST("/user/wallet/unbindWallet", handle.UnbindWallet) //取消绑定钱包✅                         //取消绑定钱包
+		private.GET("/user/profile", handle.GetProfileByUserID)        //获取用户信息✅
 	}
 }
