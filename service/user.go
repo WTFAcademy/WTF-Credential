@@ -22,16 +22,17 @@ func GetUserWallet(ctx context.Context, loginUid string) (*response.GetUserWalle
 // BindWallet
 func BindWallet(ctx context.Context, req request.BindWalletRequest, loginUid string) (*response.BindWallet, error) {
 	wallet := model.TbWallet{
-		Id:       uuid.MustParse(loginUid),
-		Wallet:   req.Wallet,
-		IsActive: true,
-		TbId:     uuid.New(),
+		Id:              uuid.MustParse(loginUid),
+		Wallet:          req.Wallet,
+		IsActive:        true,
+		TbId:            uuid.New(),
+		ModifyLockUntil: time.Date(2024, time.October, 28, 19, 42, 50, 0, time.UTC),
 	}
 	err := daos.BindWallet(ctx, wallet)
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return &response.BindWallet{Wallet: wallet.Wallet}, nil
 }
 
 // ChangeWallet
@@ -88,8 +89,9 @@ func bindNewWallet(ctx context.Context, userId uuid.UUID, newWallet string) erro
 		TbId:            uuid.New(),
 		Wallet:          newWallet,
 		IsActive:        true,
-		ModifyLockUntil: time.Now().AddDate(0, 3, 0),
+		ModifyLockUntil: time.Now(),
 	}
+	fmt.Printf("Inserting Wallet: %+v\n", wallet) // 调试信息
 	return daos.BindWallet(ctx, wallet)
 }
 

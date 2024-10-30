@@ -86,3 +86,11 @@ func GetUserProfileByID(ctx context.Context, userId string) (*response.GetProfil
 
 	return profile, nil
 }
+
+func GetUserCount() (int64, error) {
+	var count int64
+	if err := DB.Table(model.TbUserCore{}.TableName()).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}

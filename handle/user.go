@@ -59,7 +59,7 @@ func BindWallet(ctx *gin.Context) {
 	}
 	data, err := service.BindWallet(ctx, bindWalletRequest, loginUid)
 	if err != nil {
-		ctx.JSON(200, errors.Unknown(err))
+		ctx.JSON(200, fmt.Errorf(" BindWalletErr: %w", err))
 		return
 	}
 	response.JsonSuccess(ctx, data)

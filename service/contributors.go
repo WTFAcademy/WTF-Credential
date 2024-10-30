@@ -44,6 +44,10 @@ func GetContributorsList(ctx context.Context, req request.GetContributorsList) (
 	contributorsMap := make(map[string][]ContributorInfo)
 
 	for _, key := range keys {
+		// 跳过 specific_contributors_stars 和 contributors_stars 键
+		if key == "specific_contributors_stars" || key == "contributors_stars" {
+			continue //TODO:临时解决方案 后面要回来优化
+		}
 		// 从 Redis 获取每个键对应的值
 		value, err := configs.Rdb.Get(ctx, key).Result()
 		if err != nil {

@@ -2,6 +2,7 @@ package daos
 
 import (
 	"context"
+	"fmt"
 	model "wtf-credential/models"
 )
 
@@ -28,10 +29,19 @@ func GetCoursesByStartStatus(ctx context.Context, startStatus int) ([]model.TbCo
 	return res, nil
 }
 
-func GetCourseInfoByCourseId(courseId string) (courseInfo *model.TbCourse, err error) {
+func GetCourseInfoByCourseId(ctx context.Context, courseId string) (courseInfo *model.TbCourse, err error) {
 	var course = model.TbCourse{}
 	if err := DB.Where("id = ?", courseId).First(&course).Error; err != nil {
 		return nil, err
 	}
 	return &course, nil
+}
+
+// GetAllCourses 获取所有课程
+func GetAllCourses(ctx context.Context) ([]model.Course, error) {
+	var courses []model.Course
+	if err := DB.WithContext(ctx).Find(&courses).Error; err != nil {
+		return nil, fmt.Errorf("获取所有课程失败: %w", err)
+	}
+	return courses, nil
 }

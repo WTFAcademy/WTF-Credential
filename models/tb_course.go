@@ -2,7 +2,6 @@ package model
 
 import (
 	"github.com/google/uuid"
-	"time"
 )
 
 type TbCourse struct {
@@ -17,7 +16,7 @@ type TbCourse struct {
 	StartStatus  int       `json:"start_status"`
 	ShareUrl     string    `json:"share_url"`
 	CreatedAt    string    `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	UpdatedAt    string    `json:"updated_at"`
 	ExtendedInfo string    `json:"extended_info"`
 }
 

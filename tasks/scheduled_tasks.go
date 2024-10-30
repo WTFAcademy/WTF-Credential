@@ -11,9 +11,10 @@ import (
 
 // Repo 定义 GitHub 仓库的结构体
 type Repo struct {
-	ID   int    `json:"id"`       // 仓库的唯一标识符
-	Name string `json:"name"`     // 仓库的名称
-	URL  string `json:"html_url"` // 仓库的 GitHub 页面 URL
+	ID              int    `json:"id"`               // 仓库的唯一标识符
+	Name            string `json:"name"`             // 仓库的名称
+	URL             string `json:"html_url"`         // 仓库的 GitHub 页面 URL
+	StargazersCount int    `json:"stargazers_count"` // 仓库的 Star 数量
 }
 
 // Contributor 定义 GitHub 贡献者的结构体
@@ -81,7 +82,9 @@ func getContributorsList() {
 		return
 	}
 
-	ctx := context.Background() // 创建上下文
+	ctx := context.Background()                  // 创建上下文
+	totalStars := 0                              // 用于累加 Star 数量
+	contributorsSet := make(map[string]struct{}) // 用于存储唯一贡献者
 
 	for _, repo := range repos {
 		if contains(configs.Config().BypassRepos, repo.Name) {
@@ -91,7 +94,15 @@ func getContributorsList() {
 		fmt.Printf("仓库: %s (ID: %d, URL: %s)\n", repo.Name, repo.ID, repo.URL)
 		contributors := getContributors(repo.ID)
 
+		// 累加 Star 数量
+		totalStars += repo.StargazersCount
+
 		if contributors != nil {
+			for _, contributor := range contributors {
+				// 使用贡献者的 GitHub 用户名或 ID 作为键去重
+				contributorsSet[string(contributor.Id)] = struct{}{}
+			}
+
 			// 将贡献者列表转换为 JSON 格式
 			value, err := json.Marshal(contributors)
 			if err != nil {
@@ -107,11 +118,28 @@ func getContributorsList() {
 			fmt.Printf("成功存储到 Redis: %s -> %s\n", key, value)
 		}
 	}
+
+	// 计算唯一贡献者数量
+	totalContributors := len(contributorsSet)
+
+	// 将总的 Star 数量存储到 Redis
+	if err := configs.Rdb.Set(ctx, "contributors_stars", totalStars, 0).Err(); err != nil {
+		fmt.Printf("存储总 Star 数量到 Redis 失败: %s\n", err)
+	} else {
+		fmt.Printf("成功存储总 Star 数量到 Redis: contributors_stars -> %d\n", totalStars)
+	}
+
+	// 将总的贡献者数量存储到 Redis
+	if err := configs.Rdb.Set(ctx, "total_contributors", totalContributors, 0).Err(); err != nil {
+		fmt.Printf("存储总贡献者数量到 Redis 失败: %s\n", err)
+	} else {
+		fmt.Printf("成功存储总贡献者数量到 Redis: total_contributors -> %d\n", totalContributors)
+	}
 }
 
 // getContributors 获取指定仓库的贡献者列表
 func getContributors(repoID int) []ContributorInfo {
-	url := fmt.Sprintf("https://api.github.com/repositories/%d/contributors?per_page=100", repoID)
+	url := fmt.Sprintf("https://api.github.com/repositories/%d/contributors?per_page=1000", repoID)
 	resp, err := http.Get(url)
 	if err != nil {
 		fmt.Println("请求贡献者失败:", err)
@@ -129,7 +157,6 @@ func getContributors(repoID int) []ContributorInfo {
 		fmt.Println("解析贡献者失败:", err)
 		return nil
 	}
-
 	return contributors
 }
 
