@@ -33,6 +33,34 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 	}
 }
 
+func CourseJWTAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 从请求头获取 token
+		token := c.Request.Header.Get("Authorization")
+		if token == "" {
+			// 如果没有 token，继续处理请求，不返回错误
+			c.Next()
+			return
+		}
+
+		// 如果有 token，尝试解析
+		mc, err := ParseToken(c)
+		if err != nil {
+			fmt.Println(err.Error())
+			c.JSON(http.StatusOK, gin.H{
+				"code": 401,
+				"msg":  "Please login first",
+			})
+			c.Abort()
+			return
+		}
+
+		// 保存当前请求的用户 ID 到上下文中
+		c.Set("login_uid", mc.Subject)
+		c.Next() // 继续后续处理
+	}
+}
+
 func GetLoginUid(c *gin.Context) string {
 	if c.Query("network") == "stark_net" && c.Query("login_uid") != "" {
 		return c.Query("login_uid")
@@ -58,6 +86,22 @@ func GetUuidFromContext(c *gin.Context) (string, bool) {
 	}
 
 	return uuidStr, true
+}
+
+func GetCourseChaptersUidFromContext(c *gin.Context) string {
+	uuid, exists := c.Get("login_uid")
+	if !exists {
+		// 返回空字符串
+		return ""
+	}
+
+	uuidStr, ok := uuid.(string)
+	if !ok {
+		// 返回空字符串
+		return ""
+	}
+
+	return uuidStr
 }
 
 func ParseToken(c *gin.Context) (*MyClaims, error) {

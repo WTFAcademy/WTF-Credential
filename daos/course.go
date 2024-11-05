@@ -3,6 +3,7 @@ package daos
 import (
 	"context"
 	"fmt"
+	"gorm.io/gorm"
 	model "wtf-credential/models"
 )
 
@@ -44,4 +45,17 @@ func GetAllCourses(ctx context.Context) ([]model.Course, error) {
 		return nil, fmt.Errorf("获取所有课程失败: %w", err)
 	}
 	return courses, nil
+}
+
+func GetCourseInfoByPath(ctx context.Context, path string) (*model.Course, error) {
+	var course model.Course
+	// 在数据库中查询 path 匹配的课程
+	err := DB.WithContext(ctx).Where("path = ?", path).First(&course).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil // 没有找到对应的课程，返回 nil
+		}
+		return nil, err // 发生其他错误，返回错误信息
+	}
+	return &course, nil // 返回查询到的课程信息
 }

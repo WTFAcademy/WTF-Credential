@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"math/rand"
 	"strings"
+	"time"
 	"wtf-credential/configs"
 	"wtf-credential/daos"
 	model "wtf-credential/models"
@@ -32,11 +34,35 @@ func GetAllCourse(ctx context.Context) (*response.CoursesResponse, error) {
 
 	// 创建响应对象
 	response := &response.CoursesResponse{
-		Published:   make([]response.CourseDetail, 0), // 先留空，将来用于已发布课程
+		Published: []response.CourseDetail{ // 直接在这里添加模拟数据
+			{
+				Title:       "Mock Course 1",
+				Path:        "mock-course-1",
+				Description: "This is a mock course for testing.",
+				CoverImg:    "https://example.com/mock1.jpg",
+				Sort:        1,
+				TotalScore:  100,
+				UserCnt:     50,
+				ShareUrl:    "https://example.com/mock1",
+				Category:    "Mock Category",
+				PassCount:   45,
+			},
+			{
+				Title:       "Mock Course 2",
+				Path:        "mock-course-2",
+				Description: "Another mock course for testing.",
+				CoverImg:    "https://example.com/mock2.jpg",
+				Sort:        2,
+				TotalScore:  90,
+				UserCnt:     30,
+				ShareUrl:    "https://example.com/mock2",
+				Category:    "Mock Category",
+				PassCount:   25,
+			},
+		},
 		Unpublished: make([]response.CourseDetail, 0, len(allCourses)),
 	}
 
-	// 填充课程详情，暂时仅处理未发布课程
 	fillCourseDetails(allCourses, &response.Unpublished, false)
 
 	return response, nil
@@ -54,44 +80,38 @@ func fillCourseDetails(courses []model.Course, courseDetails *[]response.CourseD
 			TotalScore:  0,
 			UserCnt:     0,
 			ShareUrl:    "",
+			Category:    course.Category,
+			PassCount:   0,
 		})
 	}
 }
 
-func GetCoursesByType(ctx context.Context) (*response.GetCoursesByType, error) {
+func GetCoursesByType(ctx context.Context) (map[string][]response.CourseDetail, error) {
 	// 获取所有课程
 	allCourses, err := daos.GetAllCourses(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	// 创建响应对象
-	resp := &response.GetCoursesByType{
-		CoursesByType: make(map[string][]response.CourseDetail),
-	}
-
 	// 按类型分类课程
+	coursesByType := make(map[string][]response.CourseDetail)
 	for _, course := range allCourses {
 		courseType := course.Category
 
-		if _, exists := resp.CoursesByType[courseType]; !exists {
-			resp.CoursesByType[courseType] = make([]response.CourseDetail, 0)
-		}
-
 		// 添加课程到对应类型的切片
-		resp.CoursesByType[courseType] = append(resp.CoursesByType[courseType], response.CourseDetail{
+		coursesByType[courseType] = append(coursesByType[courseType], response.CourseDetail{
 			Title:       course.Title,
 			Path:        course.Path,
 			Description: course.Description,
 			CoverImg:    course.Cover,
 			Sort:        course.Sort,
-			TotalScore:  0,
-			UserCnt:     0,
-			ShareUrl:    "",
+			TotalScore:  1,
+			UserCnt:     1,
+			ShareUrl:    "123213",
 		})
 	}
 
-	return resp, nil
+	return coursesByType, nil
 }
 
 func GetCourseInfo(ctx context.Context, req *request.GetCourseInfo) (*model.TbCourse, error) {
@@ -247,4 +267,94 @@ func GetStatistics(ctx context.Context) (*response.GetStatistics, error) {
 		BonusAmount:      BonusAmount,
 	}
 	return statistics, nil
+}
+
+// GetCourseByPath 根据路径获取课程信息
+func GetCourseByPath(ctx context.Context, req *request.GetCourseByPath) (*response.GetCourseInfoByPath, error) {
+	// 从数据库中获取课程信息
+	course, err := daos.GetCourseInfoByPath(ctx, req.Path)
+	if err != nil {
+		return nil, err
+	}
+	if course == nil {
+		return nil, nil // 没有找到对应的课程
+	}
+
+	// 将数据库查询结果映射到 GetCourseInfoByPath 响应结构体
+	courseInfo := &response.GetCourseInfoByPath{
+		Title:           course.Title,                          // 映射课程标题
+		Path:            course.Path,                           // 映射课程的路由路径
+		Description:     course.Description,                    // 映射课程的详细描述
+		CoverImg:        course.Cover,                          // 映射课程封面图片链接
+		Category:        course.Category,                       // 映射课程分类
+		Level:           course.Level,                          // 映射课程难易程度
+		Repo:            course.Repo,                           // 映射课程代码仓库地址
+		CurrentLearners: 1000,                                  // 映射当前学习者的数量
+		StudyTime:       20,                                    // 映射当前课程学习时间
+		LastUpdated:     course.UpdatedAt.Format(time.RFC3339), // 映射课程更新时间
+	}
+
+	return courseInfo, nil
+}
+
+// GetCourseChaptersByPath 根据课程路径获取课程章节
+func GetCourseChaptersByPath(ctx context.Context, req *request.GetCourseChaptersByPath) ([]response.GetCourseChapters, error) {
+	// 查询课程单元
+	lessons, err := daos.FetchLessonsByPath(ctx, req.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	// 构建返回的章节信息
+	var courseChapters []response.GetCourseChapters // 直接使用 Chapter 类型的切片
+
+	for _, lesson := range lessons {
+		courseChapters = append(courseChapters, response.GetCourseChapters{
+			Title:           lesson.Title,
+			RoutePath:       lesson.RoutePath,
+			Sort:            lesson.Sort,
+			CurrentLearners: 1000,
+			QuizProgress:    0,
+			CodeProgress:    0,
+		})
+	}
+
+	return courseChapters, nil
+}
+
+// GetUserCourseChaptersByPath 根据课程路径获取用户的课程章节
+func GetUserCourseChaptersByPath(ctx context.Context, req *request.GetCourseChaptersByPath, loginUid string) ([]response.GetCourseChapters, error) {
+	// 查询课程单元
+	lessons, err := daos.FetchLessonsByPath(ctx, req.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	// 构建返回的章节信息
+	var courseChapters []response.GetCourseChapters
+
+	// 初始化随机数种子
+	rand.Seed(time.Now().UnixNano())
+
+	for _, lesson := range lessons {
+		// 随机选择 QuizProgress 和 CodeProgress 的值
+		progress := 0.5 + rand.Float64() // 生成 0.5 或 1
+
+		// 如果随机值大于 0.75 则设为 1，否则设为 0.5
+		if progress > 0.75 {
+			progress = 1
+		} else {
+			progress = 0.5
+		}
+
+		courseChapters = append(courseChapters, response.GetCourseChapters{
+			Title:        lesson.Title,
+			RoutePath:    lesson.RoutePath,
+			Sort:         lesson.Sort,
+			QuizProgress: progress, // 随机值
+			CodeProgress: progress, // 随机值
+		})
+	}
+
+	return courseChapters, nil
 }

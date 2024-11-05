@@ -30,6 +30,30 @@ func BinGetCourseInfo(c *gin.Context) (*GetCourseInfo, error) {
 	return &req, nil
 }
 
+type GetCourseByPath struct {
+	Path string `uri:"path" binding:"required"` // 使用 uri 标签绑定路径参数
+}
+
+func BinGetCourseByPath(c *gin.Context) (*GetCourseByPath, error) {
+	var req GetCourseByPath
+	if err := c.ShouldBindUri(&req); err != nil {
+		return nil, err
+	}
+	return &req, nil
+}
+
+type GetCourseChaptersByPath struct {
+	Path string `uri:"path" binding:"required"` // 使用 uri 标签绑定路径参数
+}
+
+func BinGetCourseChaptersByPath(c *gin.Context) (*GetCourseChaptersByPath, error) {
+	var req GetCourseChaptersByPath
+	if err := c.ShouldBindUri(&req); err != nil {
+		return nil, err
+	}
+	return &req, nil
+}
+
 type GetCourseQuizzes struct {
 	CourseID string `form:"course_id" binding:"required"` // 课程ID（必填），用于获取指定的课程
 	Lan      string `form:"lan"`                          // 语言（可选），用于指定语言版本

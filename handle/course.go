@@ -91,3 +91,44 @@ func GetStatistics(ctx *gin.Context) {
 	}
 	response.JsonSuccess(ctx, data)
 }
+
+func GetCourseByPath(ctx *gin.Context) {
+	req, err := request.BinGetCourseByPath(ctx)
+	if err != nil {
+		ctx.JSON(200, errors.Unknown(err))
+		return
+	}
+
+	data, err := service.GetCourseByPath(ctx, req)
+	if err != nil {
+		ctx.JSON(200, errors.Unknown(err))
+		return
+	}
+
+	response.JsonSuccess(ctx, data)
+
+}
+
+func GetCourseChapters(ctx *gin.Context) {
+	loginUid := middleware.GetCourseChaptersUidFromContext(ctx) // 忽略错误处理
+	req, err := request.BinGetCourseChaptersByPath(ctx)
+	if err != nil {
+		ctx.JSON(200, errors.Unknown(err))
+		return
+	}
+	var data []response.GetCourseChapters
+	if loginUid != "" {
+		data, err = service.GetUserCourseChaptersByPath(ctx, req, loginUid)
+		if err != nil {
+			ctx.JSON(200, errors.Unknown(err))
+			return
+		}
+	} else {
+		data, err = service.GetCourseChaptersByPath(ctx, req)
+		if err != nil {
+			ctx.JSON(200, errors.Unknown(err))
+			return
+		}
+	}
+	response.JsonSuccess(ctx, data)
+}

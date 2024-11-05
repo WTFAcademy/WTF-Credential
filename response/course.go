@@ -35,6 +35,8 @@ type CourseDetail struct {
 	TotalScore  int    `json:"total_score"` // 课程总分
 	UserCnt     int    `json:"user_cnt"`    // 参与人数
 	ShareUrl    string `json:"share_url"`   // 课程分享链接
+	Category    string `json:"category"`    // 课程分类
+	PassCount   int    `json:"pass_count"`  // 通过总数
 }
 
 type CoursesResponse struct {
@@ -51,4 +53,27 @@ type GetStatistics struct {
 	ContributorCount int   `json:"contributor_count"` // 贡献人数
 	StarCount        int   `json:"star_count"`        // Stars数量
 	BonusAmount      int   `json:"bonus_amount"`      // 奖金
+}
+
+type GetCourseInfoByPath struct {
+	Title           string `json:"title"`            // 课程标题
+	Path            string `json:"path"`             // 课程路由路径
+	Description     string `json:"description"`      // 课程描述
+	CoverImg        string `json:"cover_img"`        // 课程封面图片链接
+	Category        string `json:"category"`         // 课程分类
+	Level           string `json:"level"`            // 难易程度
+	Repo            string `json:"repo"`             // 仓库地址
+	CurrentLearners int    `json:"current_learners"` // 当前课程学习者的数量
+	StudyTime       int    `json:"study_time"`       // 学习时间（单位：分钟）
+	LastUpdated     string `json:"last_updated"`     // 课程更新时间（格式：ISO 8601，例如 "2024-11-03T14:00:00Z"）
+}
+
+// GetCourseChapters 表示课程章节的信息
+type GetCourseChapters struct {
+	Title           string  `json:"title,omitempty"`         // 章节标题
+	RoutePath       string  `json:"route_path,omitempty"`    // 章节路由路径
+	Sort            int     `json:"sort,omitempty"`          // 排序编号
+	CurrentLearners int     `json:"current_learners"`        // 当前课程学习者的数量
+	QuizProgress    float64 `json:"quiz_progress,omitempty"` // 章节中测验的完成进度（以百分比表示即0-1小数）
+	CodeProgress    float64 `json:"code_progress,omitempty"` // 章节中代码练习的完成进度（以百分比表示0-1小数）
 }
