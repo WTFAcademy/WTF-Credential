@@ -310,6 +310,7 @@ func GetCourseChaptersByPath(ctx context.Context, req *request.GetCourseChapters
 
 	for _, lesson := range lessons {
 		courseChapters = append(courseChapters, response.GetCourseChapters{
+			Id:              lesson.Id,
 			Title:           lesson.Title,
 			RoutePath:       lesson.RoutePath,
 			Sort:            lesson.Sort,
@@ -348,6 +349,7 @@ func GetUserCourseChaptersByPath(ctx context.Context, req *request.GetCourseChap
 		}
 
 		courseChapters = append(courseChapters, response.GetCourseChapters{
+			Id:           lesson.Id,
 			Title:        lesson.Title,
 			RoutePath:    lesson.RoutePath,
 			Sort:         lesson.Sort,
@@ -357,4 +359,50 @@ func GetUserCourseChaptersByPath(ctx context.Context, req *request.GetCourseChap
 	}
 
 	return courseChapters, nil
+}
+
+func GetUserGetChapterDetailsByID(ctx context.Context, req *request.GetChapterDetailsByPath, loginUid string) (response.GetChapterDetailsByID, error) {
+	// 查询章节详情
+	chapterDetails, err := daos.GetChapterByPathAndRoutePath(ctx, req.Path, req.RothPath)
+	if err != nil {
+		return response.GetChapterDetailsByID{}, err
+	}
+	if chapterDetails == nil {
+		return response.GetChapterDetailsByID{}, nil
+	}
+	// 生成 0 到 100 的随机分数
+	rand.Seed(time.Now().UnixNano())
+	randomScore := rand.Intn(101) // 生成 0 到 100 的随机整数
+
+	// 构建返回的章节详情信息
+	chapterDetailsResponse := response.GetChapterDetailsByID{
+		Title:     chapterDetails.Title,
+		Sort:      chapterDetails.Sort,
+		Content:   chapterDetails.Content,
+		StudyTime: 30,          // 假设该字段存在于 model.Chapter 中
+		Score:     randomScore, // 随机生成的分数
+	}
+	return chapterDetailsResponse, nil
+}
+
+// GetChapterDetailsByID 根据章节 ID 获取章节详情
+func GetChapterDetailsByID(ctx context.Context, req *request.GetChapterDetailsByPath) (response.GetChapterDetailsByID, error) {
+	// 查询章节详情
+	chapterDetails, err := daos.GetChapterByPathAndRoutePath(ctx, req.Path, req.RothPath)
+	if err != nil {
+		return response.GetChapterDetailsByID{}, err
+	}
+	if chapterDetails == nil {
+		return response.GetChapterDetailsByID{}, nil
+	}
+
+	// 构建返回的章节详情信息
+	chapterDetailsResponse := response.GetChapterDetailsByID{
+		Title:     chapterDetails.Title,   //标题
+		Sort:      chapterDetails.Sort,    //序号
+		Content:   chapterDetails.Content, //学习内容
+		StudyTime: 30,                     // 学习时间 ,单位分
+		Score:     0,                      // 用户的分数，满分100
+	}
+	return chapterDetailsResponse, nil
 }

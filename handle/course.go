@@ -132,3 +132,27 @@ func GetCourseChapters(ctx *gin.Context) {
 	}
 	response.JsonSuccess(ctx, data)
 }
+
+func GetChapterDetailsByID(ctx *gin.Context) {
+	loginUid := middleware.GetCourseChaptersUidFromContext(ctx) // 忽略错误处理
+	req, err := request.BinGetChapterDetailsByID(ctx)
+	if err != nil {
+		ctx.JSON(200, errors.Unknown(err))
+		return
+	}
+	var data response.GetChapterDetailsByID
+	if loginUid != "" {
+		data, err = service.GetUserGetChapterDetailsByID(ctx, req, loginUid)
+		if err != nil {
+			ctx.JSON(200, errors.Unknown(err))
+			return
+		}
+	} else {
+		data, err = service.GetChapterDetailsByID(ctx, req)
+		if err != nil {
+			ctx.JSON(200, errors.Unknown(err))
+			return
+		}
+	}
+	response.JsonSuccess(ctx, data)
+}

@@ -70,10 +70,20 @@ type GetCourseInfoByPath struct {
 
 // GetCourseChapters 表示课程章节的信息
 type GetCourseChapters struct {
+	Id              int64   `json:"id"`
 	Title           string  `json:"title,omitempty"`         // 章节标题
 	RoutePath       string  `json:"route_path,omitempty"`    // 章节路由路径
-	Sort            int     `json:"sort,omitempty"`          // 排序编号
+	Sort            int64   `json:"sort,omitempty"`          // 排序编号
 	CurrentLearners int     `json:"current_learners"`        // 当前课程学习者的数量
 	QuizProgress    float64 `json:"quiz_progress,omitempty"` // 章节中测验的完成进度（以百分比表示即0-1小数）
 	CodeProgress    float64 `json:"code_progress,omitempty"` // 章节中代码练习的完成进度（以百分比表示0-1小数）
+}
+
+// GetChapterDetailsByID 结构体，用于存储章节详情
+type GetChapterDetailsByID struct {
+	Title     string `json:"title"`      // 标题
+	Sort      int64  `json:"sort"`       // 排序
+	Content   string `json:"content"`    // 文档内容
+	StudyTime int64  `json:"study_time"` // 章节学习时间，单位为分钟
+	Score     int    `json:"score"`      // 分数，若已登录为用户最高分数，未登录为 0
 }

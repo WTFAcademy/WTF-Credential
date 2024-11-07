@@ -24,8 +24,8 @@ func GetLessonByCourseId(ctx context.Context, courseId string) ([]*model.TbCours
 }
 
 // FetchLessonsByPath 根据课程路径查询所有课程单元，并按照 Sort 字段排序
-func FetchLessonsByPath(ctx context.Context, path string) ([]model.TbCourseLesson, error) {
-	var lessons []model.TbCourseLesson
+func FetchLessonsByPath(ctx context.Context, path string) ([]model.Chapter, error) {
+	var lessons []model.Chapter
 
 	// 查找所有与给定路径匹配的课程单元，并按照 Sort 字段排序
 	err := DB.Where("path = ?", path).Order("sort ASC").Find(&lessons).Error

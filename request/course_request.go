@@ -84,3 +84,16 @@ func BinGetUserCourseLesson(c *gin.Context) (*GetUserCourseLesson, error) {
 	req.Lan = c.Query("lan")
 	return &req, nil
 }
+
+type GetChapterDetailsByPath struct {
+	Path     string `uri:"path" binding:"required"`         // 使用 uri 标签绑定路径参数
+	RothPath string `uri:"chapter_path" binding:"required"` // 使用 uri 标签绑定路径参数
+}
+
+func BinGetChapterDetailsByID(c *gin.Context) (*GetChapterDetailsByPath, error) {
+	var req GetChapterDetailsByPath
+	if err := c.ShouldBindUri(&req); err != nil {
+		return nil, err
+	}
+	return &req, nil
+}
