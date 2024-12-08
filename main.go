@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"wtf-credential/configs"
 	"wtf-credential/daos"
 	"wtf-credential/handle"
 	"wtf-credential/middleware"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -38,9 +39,10 @@ func route(r *gin.Engine) {
 		//public.GET("/courses/:course_id", handle.GetCourseInfo)                               //根据课程id获取课程信息❌❌
 		//public.GET("/courses/:course_id/quizzes", handle.GetCourseQuizzes)                    //根据课程 ID 获取课程检测（quiz）列表❌❌
 		//public.GET("/courses/:course_id/user_lessons/:lesson_id", handle.GetUserCourseLesson) //根据课程 ID 和单元 ID 获取用户的课程单元信息❌❌
-		public.GET("/courses/path/:path", handle.GetCourseByPath)                                                                         // 根据 path 获取课程信息✅
-		public.GET("/courses/path/:path/chapters", middleware.CourseJWTAuthMiddleware(), handle.GetCourseChapters)                        // 根据 path 获取课程章节列表✅
-		public.GET("/courses/path/:path/chapters/path/:chapter_path", middleware.CourseJWTAuthMiddleware(), handle.GetChapterDetailsByID) // 根据 path，chapter_path获取章节详情	✅
+		public.GET("/courses/path/:path", handle.GetCourseByPath)                                                                             // 根据 path 获取课程信息✅
+		public.GET("/courses/path/:path/chapters", middleware.CourseJWTAuthMiddleware(), handle.GetCourseChapters)                            // 根据 path 获取课程章节列表✅
+		public.GET("/courses/path/:path/chapters/path/:chapter_path", middleware.CourseJWTAuthMiddleware(), handle.GetChapterDetailsByID)     // 根据 path，chapter_path获取章节详情	✅
+		public.GET("/courses/path/:path/chapters/path/:chapter_path/quizzes", middleware.CourseJWTAuthMiddleware(), handle.GetChapterQuizzes) // 根据 path，chapter_path获取章节的测验列表✅
 	}
 
 	private := r.Group("/api/v1")

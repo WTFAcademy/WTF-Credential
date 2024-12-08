@@ -6,7 +6,6 @@ require (
 	github.com/beego/beego/v2 v2.3.1
 	github.com/bsm/redislock v0.9.4
 	github.com/ethereum/go-ethereum v1.12.1
-	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-jwt/jwt/v4 v4.3.0
 	github.com/google/go-github/v63 v63.0.0
