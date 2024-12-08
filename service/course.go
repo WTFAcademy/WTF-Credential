@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/google/uuid"
 	"math/rand"
 	"strings"
 	"time"
@@ -12,6 +11,8 @@ import (
 	model "wtf-credential/models"
 	"wtf-credential/request"
 	"wtf-credential/response"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -405,4 +406,35 @@ func GetChapterDetailsByID(ctx context.Context, req *request.GetChapterDetailsBy
 		Score:     0,                      // 用户的分数，满分100
 	}
 	return chapterDetailsResponse, nil
+}
+
+func GetSimpleChapterWithCourse(ctx context.Context, coursePath, chapterPath string) (*response.GetSimpleChapterWithCourseResp, error) {
+	course, err := daos.GetCourseInfoByPath(ctx, coursePath)
+	if err != nil {
+		return nil, err
+	}
+	if course == nil {
+		return nil, fmt.Errorf("未找到课程信息")
+	}
+	// 查询章节详情
+	chapter, err := daos.GetChapterByPathAndRoutePath(ctx, coursePath, chapterPath)
+	if err != nil {
+		return nil, err
+	}
+	if chapter == nil {
+		return nil, fmt.Errorf("未找到章节信息")
+	}
+	return &response.GetSimpleChapterWithCourseResp{
+		SimpleChapter: &response.SimpleChapter{
+			Id:        chapter.Id,        // 章节 ID
+			Title:     chapter.Title,     // 章节标题
+			Path:      chapter.Path,      // 课程路径
+			RoutePath: chapter.RoutePath, // 章节路径
+		},
+		SimpleCourse: &response.SimpleCourse{
+			Id:    course.Id,    // 课程 ID
+			Title: course.Title, // 课程标题
+			Path:  course.Path,  // 课程路径
+		},
+	}, nil
 }

@@ -3,15 +3,16 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/google/go-github/v63/github"
-	"golang.org/x/oauth2"
-	oauth2GitHub "golang.org/x/oauth2/github"
 	"time"
 	"wtf-credential/configs"
 	"wtf-credential/daos"
 	"wtf-credential/middleware"
 	"wtf-credential/request"
 	"wtf-credential/response"
+
+	"github.com/google/go-github/v63/github"
+	"golang.org/x/oauth2"
+	oauth2GitHub "golang.org/x/oauth2/github"
 )
 
 func GenerateNonce(ctx context.Context, wallet string) (string, error) {
@@ -80,13 +81,13 @@ func GithubLogin(ctx context.Context, code string) (*response.GithubLoginRespons
 	if err != nil && userWalletInfo == nil {
 		err = daos.CreateUser(ctx, GithubUser.Name, GithubUser.Name, GithubUser.Email, GithubUser.AvatarURL)
 		if err != nil {
-			return nil, fmt.Errorf("创建新用户失败 (Github 用户名: %s): %w", GithubUser.Name, err)
+			return nil, fmt.Errorf("创建新用户失败 (Github 用户名: %s): %w", *GithubUser.Name, err)
 		}
 
 		// 重新获取用户信息以获取用户 ID
 		userWalletInfo, err = daos.GetUserByGithubName(ctx, GithubUser.Name)
 		if err != nil {
-			return nil, fmt.Errorf("重新获取用户信息失败 (Github 用户名: %s): %w", GithubUser.Name, err)
+			return nil, fmt.Errorf("重新获取用户信息失败 (Github 用户名: %s): %w", *GithubUser.Name, err)
 		}
 	}
 

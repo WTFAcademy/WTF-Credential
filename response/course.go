@@ -1,8 +1,9 @@
 package response
 
 import (
-	"github.com/google/uuid"
 	model "wtf-credential/models"
+
+	"github.com/google/uuid"
 )
 
 // LessonQuizInfo 表示课程单元的测验信息
@@ -86,4 +87,22 @@ type GetChapterDetailsByID struct {
 	Content   string `json:"content"`    // 文档内容
 	StudyTime int64  `json:"study_time"` // 章节学习时间，单位为分钟
 	Score     int    `json:"score"`      // 分数，若已登录为用户最高分数，未登录为 0
+}
+
+type SimpleChapter struct {
+	Id        int64  `json:"id"`           // 章节 ID
+	Title     string `json:"title"`        // 章节标题
+	Path      string `json:"course_path"`  // 章节路由路径
+	RoutePath string `json:"chapter_path"` // 章节路由路径
+}
+
+type SimpleCourse struct {
+	Id    int64  `json:"id"`    // 课程 ID
+	Title string `json:"title"` // 课程标题
+	Path  string `json:"path"`  // 课程路由路径
+}
+
+type GetSimpleChapterWithCourseResp struct {
+	SimpleChapter *SimpleChapter `json:"simple_chapter"`
+	SimpleCourse  *SimpleCourse  `json:"simple_course"`
 }

@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
 	model "wtf-credential/models"
+
+	"github.com/google/uuid"
 )
 
 // 将 int 转换为 UUID 的函数
@@ -40,4 +41,14 @@ func GetLessonQuizByCourseId(ctx context.Context, courseId string) (map[uuid.UUI
 	}
 
 	return quizMap, nil // 返回测验信息映射
+}
+
+// FindQuizListByChapterId 根据章节 ID 获取对应的测验列表 sort 都是0 这里按照 id 正序
+func FindQuizListByChapterId(ctx context.Context, chapterId int64) ([]model.Quiz, error) {
+	var quizzes []model.Quiz
+	err := DB.WithContext(ctx).Where("chapter_id = ?", chapterId).Order("id asc").Find(&quizzes).Error
+	if err != nil {
+		return nil, err
+	}
+	return quizzes, nil
 }
