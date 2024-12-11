@@ -56,6 +56,6 @@ func route(r *gin.Engine) {
 
 		/***课程习题相关***/
 		public.GET("/course/:course_path/chapter/:chapter_path/quizzes", handle.GetChapterQuizzes) // 根据 path，chapter_path获取章节的测验列表✅
-		public.POST("/grade", handle.QuizGradeSubmit)                                              // 评分✅ TODO:频控
+		private.POST("/grade", handle.QuizGradeSubmit)                                             // 评分✅ TODO:频控
 	}
 }

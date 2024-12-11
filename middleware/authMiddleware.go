@@ -3,9 +3,10 @@ package middleware
 import (
 	"errors"
 	"fmt"
-	"github.com/golang-jwt/jwt/v4"
 	"net/http"
 	"wtf-credential/configs"
+
+	"github.com/golang-jwt/jwt/v4"
 
 	"github.com/gin-gonic/gin"
 )
@@ -75,12 +76,14 @@ func GetLoginUid(c *gin.Context) string {
 func GetUuidFromContext(c *gin.Context) (string, bool) {
 	uuid, exists := c.Get("login_uid")
 	if !exists {
+		// 如果找不到 login_uid，返回 401 错误并退出
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "无法获取id"})
 		return "", false
 	}
 
 	uuidStr, ok := uuid.(string)
 	if !ok {
+		// 如果转换为 string 类型失败，返回 500 错误并退出
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "id格式错误"})
 		return "", false
 	}

@@ -3,12 +3,13 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/google/uuid"
 	"time"
 	"wtf-credential/daos"
 	model "wtf-credential/models"
 	"wtf-credential/request"
 	"wtf-credential/response"
+
+	"github.com/google/uuid"
 )
 
 func GetUserWallet(ctx context.Context, loginUid string) (*response.GetUserWallet, error) {
@@ -65,9 +66,9 @@ func checkWalletBinding(ctx context.Context, wallet string) error {
 
 func validateWalletModification(wallet model.TbWallet, newWallet string) error {
 	if !wallet.ModifyLockUntil.IsZero() && time.Now().Before(wallet.ModifyLockUntil) {
-		return fmt.Errorf("抱歉，目前不能修改钱包地址，修改锁定时间为3个月")
+		return fmt.Errorf("抱歉目前不能修改钱包地址修改锁定时间为3个月")
 	} else if wallet.Wallet == newWallet {
-		return fmt.Errorf("与原来的钱包相同!")
+		return fmt.Errorf("与原来的钱包相同")
 	}
 	return nil
 }

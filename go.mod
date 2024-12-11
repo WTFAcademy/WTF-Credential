@@ -10,7 +10,9 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.3.0
 	github.com/google/go-github/v63 v63.0.0
 	github.com/google/uuid v1.6.0
+	github.com/json-iterator/go v1.1.12
 	github.com/redis/go-redis/v9 v9.7.0
+	github.com/samber/lo v1.47.0
 	github.com/spf13/viper v1.19.0
 	github.com/spruceid/siwe-go v0.2.1
 	golang.org/x/oauth2 v0.18.0
@@ -46,7 +48,6 @@ require (
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
@@ -58,7 +59,6 @@ require (
 	github.com/relvacode/iso8601 v1.1.1-0.20210511065120-b30b151cc433 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
-	github.com/samber/lo v1.47.0 // indirect
 	github.com/shiena/ansicolor v0.0.0-20200904210342-c7312218db18 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
